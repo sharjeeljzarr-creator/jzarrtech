@@ -7,7 +7,7 @@
 
 # testing
 /coverage
-Aboutus.jsx
+src/pages/Aboutus.jsx
 # production
 /build
 
