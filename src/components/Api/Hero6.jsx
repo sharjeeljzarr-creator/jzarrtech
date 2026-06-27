@@ -52,8 +52,12 @@ const Hero6 = () => {
           </span>
 
           <h1>
-            Seamless API Integration.
-            <span> Stronger Connections.</span>
+            <span className="apihero-heading-main">
+              Seamless API Integration.
+            </span>
+            <span className="apihero-heading-accent">
+              Stronger Connections.
+            </span>
           </h1>
 
           <p>

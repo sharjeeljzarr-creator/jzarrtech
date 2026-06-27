@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./ContactSection.css";
 import { FaCalendarAlt, FaVideo, FaClock } from "react-icons/fa";
 import CountryCodeSelect from "./CountryCodeSelect";
+import axios from "axios";
+import { getPhoneMaxLength, sanitizePhoneInput } from "../utils/phoneValidation";
 
 const initialForm = {
   firstName: "",
@@ -14,8 +16,6 @@ const initialForm = {
 };
 
 const sanitizeName = (value) => value.replace(/[^a-zA-Z\s'-]/g, "");
-const sanitizePhone = (value) => value.replace(/[^\d\s()-]/g, "");
-
 const ContactSection = ({ id = "contact" }) => {
   const [formData, setFormData] = useState(initialForm);
 
@@ -34,7 +34,7 @@ const ContactSection = ({ id = "contact" }) => {
     if (name === "phone") {
       setFormData((current) => ({
         ...current,
-        phone: sanitizePhone(value),
+        phone: sanitizePhoneInput(value, current.countryIso),
       }));
 
       return;
@@ -46,15 +46,32 @@ const ContactSection = ({ id = "contact" }) => {
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setFormData(initialForm);
-  };
+ const handleSubmit = async (event) => {
+  event.preventDefault();
 
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/contact",
+      formData
+    );
+
+    alert(response.data.message);
+
+    setFormData(initialForm);
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert("Something went wrong!");
+
+  }
+};
   const handleCountryChange = (countryIso) => {
     setFormData((current) => ({
       ...current,
       countryIso,
+      phone: sanitizePhoneInput(current.phone, countryIso),
     }));
   };
 
@@ -150,16 +167,19 @@ const ContactSection = ({ id = "contact" }) => {
       onChange={handleCountryChange}
     />
 
-    <input
-      type="tel"
-      name="phone"
-      value={formData.phone}
-      onChange={handleChange}
-      placeholder="Phone Number"
-      autoComplete="tel-national"
-      inputMode="tel"
-    />
-  </div>
+      <input
+        type="tel"
+        name="phone"
+        value={formData.phone}
+        onChange={handleChange}
+        placeholder="Phone Number"
+        autoComplete="tel-national"
+        inputMode="tel"
+        maxLength={getPhoneMaxLength(formData.countryIso)}
+        pattern={`\\d{7,${getPhoneMaxLength(formData.countryIso)}}`}
+        title="Please enter a valid phone number for the selected country code."
+      />
+    </div>
 
   {/* Email */}
 

@@ -125,8 +125,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-
-  margin-bottom: 20px;
 }
 
 .cw-project-tags span {
@@ -140,25 +138,6 @@
 
   font-size: 13px;
   font-weight: 600;
-}
-
-/* LINK */
-
-.cw-project-content a {
-  text-decoration: none;
-
-  color: #ff7b00;
-
-  font-weight: 700;
-
-  display: inline-flex;
-  align-items: center;
-
-  transition: .3s;
-}
-
-.cw-project-card:hover a {
-  color: #d96500;
 }
 
 /* RESPONSIVE */

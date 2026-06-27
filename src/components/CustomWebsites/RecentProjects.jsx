@@ -72,10 +72,6 @@ const RecentProjects = () => {
                     <span key={i}>{tag}</span>
                   ))}
                 </div>
-
-                <a href="/">
-                  View Project
-                </a>
               </div>
             </div>
           ))}

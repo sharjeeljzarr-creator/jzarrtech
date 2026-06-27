@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   FaCalendarAlt,
   FaClock,
@@ -11,6 +12,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CountryCodeSelect from "../components/CountryCodeSelect";
 import "./ContactConsultation.css";
+import { getPhoneMaxLength, sanitizePhoneInput } from "../utils/phoneValidation";
 
 const initialForm = {
   firstName: "",
@@ -24,8 +26,6 @@ const initialForm = {
 };
 
 const sanitizeName = (value) => value.replace(/[^a-zA-Z\s'-]/g, "");
-const sanitizePhone = (value) => value.replace(/[^\d\s()-]/g, "");
-
 const ContactConsultation = () => {
   const [formData, setFormData] = useState(initialForm);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -45,7 +45,7 @@ const ContactConsultation = () => {
     if (name === "phone") {
       setFormData((current) => ({
         ...current,
-        phone: sanitizePhone(value),
+        phone: sanitizePhoneInput(value, current.countryIso),
       }));
 
       return;
@@ -57,16 +57,35 @@ const ContactConsultation = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/contact",
+      formData
+    );
+
     setIsSubmitted(true);
+
+    alert(response.data.message);
+
     setFormData(initialForm);
-  };
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Something went wrong!");
+
+  }
+};
 
   const handleCountryChange = (countryIso) => {
     setFormData((current) => ({
       ...current,
       countryIso,
+      phone: sanitizePhoneInput(current.phone, countryIso),
     }));
   };
 
@@ -205,6 +224,9 @@ const ContactConsultation = () => {
                       placeholder="Phone Number"
                       autoComplete="tel-national"
                       inputMode="tel"
+                      maxLength={getPhoneMaxLength(formData.countryIso)}
+                      pattern={`\\d{7,${getPhoneMaxLength(formData.countryIso)}}`}
+                      title="Please enter a valid phone number for the selected country code."
                     />
                   </div>
 
